@@ -1,0 +1,65 @@
+---
+title: "Day 2 EOD Wild Data"
+author: "Liz Peterson"
+format: html
+editor_options: 
+  chunk_output_type: console
+warning: FALSE
+message: FALSE
+---
+
+```{r}
+library(tidyverse)
+library(here)
+library(janitor)
+```
+
+```{r}
+mack_verts <- read_csv(here::here("data","AS00601.csv"),)
+view(mack_verts)
+mack_verts <- mack_verts %>% clean_names()
+```
+
+```{r}
+mc_wt_5 <- mack_verts$weight[5]
+mc_length_8_20 <- mack_verts$length1[8:20]
+mc_dates <- mack_verts$sampledate
+```
+
+```{r}
+mc_salamanders <- subset(mack_verts %>% dplyr::filter(species == "DITE"))
+```
+
+```{r}
+ggplot(data = mc_salamanders, aes(x = length1, y = weight)) +
+  geom_point(color = "pink", size = 2, alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Length vs Weight",
+       subtitle = "Salamanders from Mack Creek",
+       x = "Snout-vent Length (mm)",
+       y = "Weight (g)",
+       caption = "Data from 1987 to present")
+
+ggsave(here::here("figs", "salamander_size.png"), height = 6, width = 7)
+```
+
+```{r}
+mc_trout <- subset(mack_verts %>% dplyr::filter(species == "ONCL"))
+```
+
+```{r}
+ggplot(data = mc_trout, aes(x = length1, y = weight, color = reach)) +
+  geom_point() +
+  facet_wrap(~reach) +
+  scale_color_manual(values = c("red", "orange", "pink")) +
+  labs(title = "Length vs Weight",
+       subtitle = "Trout from Mack Creek",
+       x = "Length (mm)",
+       y = "Weight (g)",
+       caption = "Data from 1987 to present")
+
+ggsave(here::here("figs", "cutthroat_size.png"), height = 6, width = 7)
+```
+
+
+
